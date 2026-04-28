@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EAAA | 3D Solar System</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="scene-root"></div>
+
+    <div id="hud">
+      <h1>Escambia Amateur Astronomers Association</h1>
+      <p>Click the Sun or a planet to reveal that page. Click empty space to hide the page panel.</p>
+    </div>
+
+    <div id="labels"></div>
+
+    <aside id="page-panel" class="hidden" aria-live="polite" aria-hidden="true">
+      <button id="panel-close" aria-label="Close page panel">✕</button>
+      <h2 id="panel-title"></h2>
+      <div id="panel-content"></div>
+    </aside>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
