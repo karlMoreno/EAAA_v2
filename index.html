@@ -11,14 +11,16 @@
 
     <div id="hud">
       <h1>Escambia Amateur Astronomers Association</h1>
-      <p>Click the Sun or a planet to reveal that page. Click empty space to hide the page panel.</p>
+      <p>
+        Explore the system: Sun = Home, Earth-like = About, Saturn-like = Calendar,
+        Neptune-like = Links.
+      </p>
     </div>
 
     <div id="labels"></div>
 
-    <aside id="page-panel" class="hidden" aria-live="polite" aria-hidden="true">
-      <button id="panel-close" aria-label="Close page panel">✕</button>
-      <h2 id="panel-title"></h2>
+    <aside id="page-panel" aria-live="polite">
+      <h2 id="panel-title">Home</h2>
       <div id="panel-content"></div>
     </aside>
 
