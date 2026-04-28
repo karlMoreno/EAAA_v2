@@ -8,7 +8,8 @@ const pageData = {
       <p>The Astronomical League's objective is to promote the science of astronomy by fostering education, supporting observation/research, and assisting communication among amateur societies.</p>
       <p><strong>What we do:</strong> monthly stargazes, community star parties, and monthly meetings focused on astronomy topics and astrophotography.</p>
       <p><strong>Contact:</strong> Club President Ed Magowan (edward_magowan@yahoo.com), Club Sponsor at PSC Lauren Rogers (lrogers@pensacolastate.edu).</p>
-    `
+    `,
+    label: 'Home'
   },
   about: {
     title: 'About — Membership',
@@ -17,7 +18,8 @@ const pageData = {
       <p>Members are automatically members of the Astronomical League and receive a quarterly magazine, plus eligibility for observing clubs and awards.</p>
       <p><a href="https://www.astroleague.org/observing.html" target="_blank" rel="noreferrer">Astronomical League observing programs</a></p>
       <p>Members are also active in preserving dark skies and reducing light pollution via <a href="https://www.darksky.org" target="_blank" rel="noreferrer">DarkSky International</a>.</p>
-    `
+    `,
+    label: 'About'
   },
   calendar: {
     title: 'Calendar',
@@ -29,7 +31,8 @@ const pageData = {
         <li><strong>Total Solar Eclipse of 2024</strong> with path of totality mentions including Maine.</li>
       </ul>
       <p><strong>Past events:</strong> Community Outreach, Monthly Stargazes at Casino Beach, Friends and Fun, and the 2010 Lunar Eclipse.</p>
-    `
+    `,
+    label: 'Calendar'
   },
   links: {
     title: 'Links',
@@ -43,87 +46,51 @@ const pageData = {
         <li><a href="https://webb.nasa.gov" target="_blank" rel="noreferrer">James Webb Space Telescope</a></li>
       </ul>
       <p>Share additional favorite space resources with lrogers@pensacolastate.edu for review.</p>
-    `
+    `,
+    label: 'Links'
   }
 };
 
 const root = document.getElementById('scene-root');
 const labelsRoot = document.getElementById('labels');
-const panel = document.getElementById('page-panel');
 const panelTitle = document.getElementById('panel-title');
 const panelContent = document.getElementById('panel-content');
-const panelClose = document.getElementById('panel-close');
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.15;
 root.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x02040f);
-scene.fog = new THREE.FogExp2(0x02040f, 0.00075);
 
-const camera = new THREE.PerspectiveCamera(53, window.innerWidth / window.innerHeight, 0.1, 2500);
-camera.position.set(0, 70, 170);
-camera.lookAt(0, -6, 0);
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 2000);
+camera.position.set(0, 56, 130);
+camera.lookAt(0, 0, 0);
 
-const ambient = new THREE.AmbientLight(0x203050, 0.2);
+const ambient = new THREE.AmbientLight(0x223355, 0.16);
 scene.add(ambient);
 
-const rimLight = new THREE.DirectionalLight(0x7da2ff, 0.38);
-rimLight.position.set(-120, 80, -160);
-scene.add(rimLight);
-
-const sunLight = new THREE.PointLight(0xffe0a1, 42000, 1800, 2);
-sunLight.castShadow = true;
-sunLight.shadow.mapSize.set(2048, 2048);
-sunLight.shadow.bias = -0.0001;
+const sunLight = new THREE.PointLight(0xffe6aa, 2.7, 1200, 1.4);
 scene.add(sunLight);
 
 const sun = new THREE.Mesh(
-  new THREE.SphereGeometry(11.5, 96, 96),
-  new THREE.MeshStandardMaterial({
-    color: 0xffbb4f,
-    emissive: 0xff9b2f,
-    emissiveIntensity: 1.2,
-    roughness: 0.78,
-    metalness: 0
-  })
+  new THREE.SphereGeometry(10, 64, 64),
+  new THREE.MeshBasicMaterial({ color: 0xffc04d })
 );
-sun.castShadow = false;
 scene.add(sun);
 
 const corona = new THREE.Mesh(
-  new THREE.SphereGeometry(13.3, 56, 56),
-  new THREE.MeshBasicMaterial({ color: 0xffb866, transparent: true, opacity: 0.23 })
+  new THREE.SphereGeometry(11.5, 48, 48),
+  new THREE.MeshBasicMaterial({ color: 0xffaa55, transparent: true, opacity: 0.2 })
 );
 scene.add(corona);
 
-const dustDisk = new THREE.Mesh(
-  new THREE.RingGeometry(16, 115, 128),
-  new THREE.MeshStandardMaterial({
-    color: 0x121c34,
-    transparent: true,
-    opacity: 0.33,
-    side: THREE.DoubleSide,
-    roughness: 1,
-    metalness: 0
-  })
-);
-dustDisk.rotation.x = -Math.PI / 2;
-dustDisk.position.y = -13;
-dustDisk.receiveShadow = true;
-scene.add(dustDisk);
-
 const starsGeo = new THREE.BufferGeometry();
-const starCount = 3600;
+const starCount = 2500;
 const starPos = new Float32Array(starCount * 3);
 for (let i = 0; i < starCount; i++) {
-  const r = 850 + Math.random() * 900;
+  const r = 700 + Math.random() * 500;
   const theta = Math.random() * Math.PI * 2;
   const phi = Math.acos(2 * Math.random() - 1);
   starPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
@@ -131,144 +98,41 @@ for (let i = 0; i < starCount; i++) {
   starPos[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
 }
 starsGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-scene.add(
-  new THREE.Points(
-    starsGeo,
-    new THREE.PointsMaterial({ color: 0xffffff, size: 2.2, sizeAttenuation: true, transparent: true, opacity: 0.95 })
-  )
-);
+scene.add(new THREE.Points(starsGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 1.8, sizeAttenuation: true })));
 
-function canvasTexture(draw) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 1024;
-  canvas.height = 512;
-  const ctx = canvas.getContext('2d');
-  draw(ctx, canvas.width, canvas.height);
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.ClampToEdgeWrapping;
-  texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-  texture.needsUpdate = true;
-  return texture;
-}
-
-function earthTexture() {
-  return canvasTexture((ctx, w, h) => {
-    const ocean = ctx.createLinearGradient(0, 0, 0, h);
-    ocean.addColorStop(0, '#4ea5ff');
-    ocean.addColorStop(1, '#0b3f86');
-    ctx.fillStyle = ocean;
-    ctx.fillRect(0, 0, w, h);
-
-    ctx.fillStyle = '#68ba63';
-    for (let i = 0; i < 25; i++) {
-      const x = Math.random() * w;
-      const y = Math.random() * h;
-      const rw = 65 + Math.random() * 180;
-      const rh = 24 + Math.random() * 80;
-      ctx.beginPath();
-      ctx.ellipse(x, y, rw, rh, Math.random() * Math.PI, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    ctx.fillStyle = 'rgba(255,255,255,0.42)';
-    for (let i = 0; i < 80; i++) {
-      ctx.beginPath();
-      ctx.ellipse(Math.random() * w, Math.random() * h, 20 + Math.random() * 75, 4 + Math.random() * 22, Math.random() * Math.PI, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  });
-}
-
-function saturnTexture() {
-  return canvasTexture((ctx, w, h) => {
-    const g = ctx.createLinearGradient(0, 0, 0, h);
-    g.addColorStop(0, '#dbc59c');
-    g.addColorStop(1, '#9a7f56');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, w, h);
-
-    for (let i = 0; i < 28; i++) {
-      ctx.fillStyle = `rgba(80,55,30,${0.08 + Math.random() * 0.12})`;
-      const y = (i / 28) * h + (Math.random() - 0.5) * 10;
-      ctx.fillRect(0, y, w, 10 + Math.random() * 18);
-    }
-  });
-}
-
-function neptuneTexture() {
-  return canvasTexture((ctx, w, h) => {
-    const g = ctx.createLinearGradient(0, 0, 0, h);
-    g.addColorStop(0, '#5ab2ff');
-    g.addColorStop(1, '#20419c');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, w, h);
-
-    for (let i = 0; i < 34; i++) {
-      ctx.fillStyle = `rgba(180,225,255,${0.05 + Math.random() * 0.1})`;
-      const y = (i / 34) * h + (Math.random() - 0.5) * 8;
-      ctx.fillRect(0, y, w, 8 + Math.random() * 14);
-    }
-  });
-}
-
-const planetTextures = {
-  about: earthTexture(),
-  calendar: saturnTexture(),
-  links: neptuneTexture()
-};
-
-function createPlanet({ key, radius, distance, speed, labelText, ring = false, tilt = 0.15 }) {
+function createPlanet({ key, radius, distance, color, speed, ring = false, labelText }) {
   const pivot = new THREE.Object3D();
   scene.add(pivot);
 
-  const material = new THREE.MeshStandardMaterial({
-    map: planetTextures[key],
-    roughness: 0.92,
-    metalness: 0,
-    bumpMap: planetTextures[key],
-    bumpScale: 0.06
-  });
-
-  const mesh = new THREE.Mesh(new THREE.SphereGeometry(radius, 96, 96), material);
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(radius, 48, 48),
+    new THREE.MeshStandardMaterial({ color, roughness: 0.95, metalness: 0.02 })
+  );
   mesh.position.x = distance;
-  mesh.rotation.z = tilt;
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
   mesh.userData.pageKey = key;
+  mesh.userData.speed = speed;
+  mesh.userData.distance = distance;
+  mesh.userData.labelText = labelText;
   pivot.add(mesh);
 
   if (ring) {
-    const ringTex = canvasTexture((ctx, w, h) => {
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, w, h);
-      for (let i = 0; i < 300; i++) {
-        const a = Math.random() * w;
-        ctx.fillStyle = `rgba(230,220,190,${0.2 + Math.random() * 0.7})`;
-        ctx.fillRect(a, 0, 1 + Math.random() * 3, h);
-      }
-    });
-
     const ringMesh = new THREE.Mesh(
-      new THREE.RingGeometry(radius * 1.55, radius * 2.9, 128),
-      new THREE.MeshStandardMaterial({ map: ringTex, transparent: true, side: THREE.DoubleSide, roughness: 1, metalness: 0 })
+      new THREE.RingGeometry(radius * 1.35, radius * 2.1, 72),
+      new THREE.MeshStandardMaterial({ color: 0xc9c2a3, side: THREE.DoubleSide, roughness: 1 })
     );
-    ringMesh.rotation.x = Math.PI / 2.45;
-    ringMesh.rotation.z = 0.28;
+    ringMesh.rotation.x = Math.PI / 2.8;
     ringMesh.position.x = distance;
-    ringMesh.castShadow = true;
-    ringMesh.receiveShadow = true;
     pivot.add(ringMesh);
   }
 
   const orbit = new THREE.LineLoop(
     new THREE.BufferGeometry().setFromPoints(
-      [...Array(128)].map((_, i) => {
-        const t = (i / 128) * Math.PI * 2;
+      [...Array(96)].map((_, i) => {
+        const t = (i / 96) * Math.PI * 2;
         return new THREE.Vector3(Math.cos(t) * distance, 0, Math.sin(t) * distance);
       })
     ),
-    new THREE.LineBasicMaterial({ color: 0x24406d, transparent: true, opacity: 0.65 })
+    new THREE.LineBasicMaterial({ color: 0x25395f })
   );
   scene.add(orbit);
 
@@ -280,49 +144,36 @@ function createPlanet({ key, radius, distance, speed, labelText, ring = false, t
   return { pivot, mesh, labelEl, speed };
 }
 
+
 const sunLabel = document.createElement('div');
 sunLabel.className = 'planet-label';
 sunLabel.innerHTML = `<strong>Home (Sun)</strong><span>${pageData.home.title}</span>`;
 labelsRoot.appendChild(sunLabel);
 
 const planets = [
-  createPlanet({ key: 'about', radius: 5.4, distance: 35, speed: 0.0065, labelText: 'About (Earth)', tilt: 0.4 }),
-  createPlanet({ key: 'calendar', radius: 7.2, distance: 62, speed: 0.0039, labelText: 'Calendar (Saturn)', ring: true, tilt: 0.2 }),
-  createPlanet({ key: 'links', radius: 6.5, distance: 92, speed: 0.0027, labelText: 'Links (Neptune)', tilt: 0.3 })
+  createPlanet({ key: 'about', radius: 3.8, distance: 28, color: 0x3a73d9, speed: 0.007, labelText: 'About (Earth)' }),
+  createPlanet({ key: 'calendar', radius: 5.4, distance: 49, color: 0xc8b17b, speed: 0.0045, ring: true, labelText: 'Calendar (Saturn)' }),
+  createPlanet({ key: 'links', radius: 4.8, distance: 71, color: 0x3b73cc, speed: 0.0032, labelText: 'Links (Neptune)' })
 ];
-
-const selectables = [sun, ...planets.map((planet) => planet.mesh)];
 
 function setPage(key) {
   const page = pageData[key];
   panelTitle.textContent = page.title;
   panelContent.innerHTML = page.html;
-  panel.classList.remove('hidden');
-  panel.setAttribute('aria-hidden', 'false');
 }
-
-function hidePanel() {
-  panel.classList.add('hidden');
-  panel.setAttribute('aria-hidden', 'true');
-}
-
-panelClose.addEventListener('click', hidePanel);
+setPage('home');
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
 window.addEventListener('pointerdown', (event) => {
-  if (event.target.closest('#page-panel') || event.target.closest('#hud')) return;
-
   pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
   pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(pointer, camera);
 
-  const hit = raycaster.intersectObjects(selectables)[0];
-  if (!hit) {
-    hidePanel();
-    return;
-  }
+  const planetMeshes = [sun, ...planets.map((p) => p.mesh)];
+  const hit = raycaster.intersectObjects(planetMeshes)[0];
+  if (!hit) return;
 
   if (hit.object === sun) {
     setPage('home');
@@ -338,42 +189,34 @@ function toScreenPosition(v3) {
   return {
     x: (p.x * 0.5 + 0.5) * window.innerWidth,
     y: (-p.y * 0.5 + 0.5) * window.innerHeight,
-    visible: p.z < 1 && p.z > -1
+    visible: p.z < 1
   };
 }
 
-const _tmp = new THREE.Vector3();
 const clock = new THREE.Clock();
-
 function animate() {
-  const elapsed = clock.getElapsedTime();
   const dt = clock.getDelta();
+  sun.rotation.y += dt * 0.08;
+  corona.scale.setScalar(1 + Math.sin(clock.elapsedTime * 2.4) * 0.02);
 
-  sun.rotation.y += dt * 0.11;
-  sunLight.position.copy(sun.position);
-  corona.scale.setScalar(1 + Math.sin(elapsed * 1.8) * 0.03);
-  dustDisk.rotation.z += dt * 0.01;
-
-  planets.forEach((planet, i) => {
+  planets.forEach((planet) => {
     planet.pivot.rotation.y += planet.speed;
-    planet.mesh.rotation.y += dt * (0.8 + i * 0.35);
+    planet.mesh.rotation.y += 0.01;
 
-    const worldPos = planet.mesh.getWorldPosition(_tmp);
-    const screen = toScreenPosition(worldPos);
+    const screen = toScreenPosition(planet.mesh.getWorldPosition(new THREE.Vector3()));
     planet.labelEl.style.display = screen.visible ? 'block' : 'none';
     planet.labelEl.style.left = `${screen.x}px`;
-    planet.labelEl.style.top = `${screen.y - 30}px`;
+    planet.labelEl.style.top = `${screen.y - 26}px`;
   });
 
-  const sunScreen = toScreenPosition(sun.getWorldPosition(_tmp));
+  const sunScreen = toScreenPosition(sun.getWorldPosition(new THREE.Vector3()));
   sunLabel.style.display = sunScreen.visible ? 'block' : 'none';
   sunLabel.style.left = `${sunScreen.x}px`;
-  sunLabel.style.top = `${sunScreen.y - 40}px`;
+  sunLabel.style.top = `${sunScreen.y - 34}px`;
 
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 }
-
 animate();
 
 window.addEventListener('resize', () => {
